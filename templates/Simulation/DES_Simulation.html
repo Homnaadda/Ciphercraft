@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DES Encryption Demo</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500&family=Roboto+Slab:wght@400;500&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --primary: #6366f1;
+                --primary-dark: #4338ca;
+                --background: #f8fafc;
+                --foreground: #1e293b;
+                --muted: #e2e8f0;
+                --muted-foreground: #475569;
+                --success: #34d399;
+                --error: #f87171;
+            }
+
+            body {
+                font-family: 'Nunito', sans-serif;
+                color: var(--foreground);
+                background-color: var(--background);
+                overflow-x: hidden;
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+
+            .navbar {
+                background-color: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(10px);
+                transition: background-color 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            }
+
+            .navbar:hover {
+                background-color: rgba(255, 255, 255, 1);
+            }
+
+            .navbar-brand {
+                font-size: 2.3rem;
+                font-weight: 500;
+                color: var(--primary);
+                transition: color 0.3s ease;
+                font-family: 'Roboto Slab', serif;
+            }
+
+            .navbar-brand:hover {
+                color: var(--primary-dark);
+            }
+
+            .hero {
+                background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+                color: var(--foreground);
+                text-align: center;
+                padding: 120px 0;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 255, 255, 0.1);
+                z-index: 1;
+                animation: wave 10s linear infinite, fadeIn 2s ease-in-out;
+            }
+
+            @keyframes wave {
+                0% {
+                    background-position: 0% 50%;
+                }
+                100% {
+                    background-position: 100% 50%;
+                }
+            }
+
+            @keyframes fadeIn {
+                0% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+
+            .hero-content {
+                position: relative;
+                z-index: 2;
+                animation: fadeInUp 1s ease-in-out;
+            }
+
+            @keyframes fadeInUp {
+                0% {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .hero h1 {
+                font-size: 3.5rem;
+                font-weight: 500;
+                margin-bottom: 15px;
+                color: var(--foreground);
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                font-family: 'Roboto Slab', serif;
+            }
+
+            .hero p {
+                font-size: 1.3rem;
+                margin-bottom: 30px;
+                color: var(--foreground);
+            }
+
+            .card {
+                transition: transform 0.3s, box-shadow 0.3s;
+                border: none;
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+                border-radius: 10px;
+                background-color: white;
+                animation: slideIn 0.5s ease-in-out;
+            }
+
+            @keyframes slideIn {
+                0% {
+                    opacity: 0;
+                    transform: translateX(-20px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-primary {
+                background-color: var(--primary);
+                border-color: var(--primary);
+                transition: background-color 0.3s, border-color 0.3s, transform 0.2s, box-shadow 0.2s;
+                padding: 10px 24px;
+                font-size: 1.1rem;
+                border-radius: 5px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-primary:hover {
+                background-color: var(--primary-dark);
+                border-color: var(--primary-dark);
+                transform: scale(1.05);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .text-muted {
+                color: var(--muted-foreground) !important;
+            }
+
+            .bg-light {
+                background-color: var(--muted) !important;
+            }
+
+            .section-title {
+                position: relative;
+                padding-bottom: 15px;
+                margin-bottom: 30px;
+                font-weight: 500;
+                font-size: 2.7rem;
+                color: var(--foreground);
+                font-family: 'Roboto Slab', serif;
+            }
+
+            .section-title::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                bottom: 0;
+                transform: translateX(-50%);
+                height: 3px;
+                width: 50px;
+                background-color: var(--primary);
+            }
+
+            h2 {
+              font-weight: 500;
+              color: var(--foreground);
+              font-size: 2rem;
+              font-family: 'Roboto Slab', serif;
+            }
+
+            h3 {
+              font-weight: 400;
+              color: var(--foreground);
+              font-size: 1.4rem;
+              font-family: 'Roboto Slab', serif;
+            }
+
+            .feature-icon {
+                width: 70px;
+                height: 70px;
+                background-color: var(--primary);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.8rem;
+                margin-bottom: 15px;
+                transition: transform 0.5s ease-in-out;
+            }
+
+            .feature-icon:hover {
+                transform: rotate(360deg) scale(1.2);
+            }
+
+            .list-group-numbered .list-group-item {
+                margin-bottom: 0.6rem;
+                border: none;
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+                border-radius: 8px;
+                font-size: 1.1rem;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                padding: 0.8rem;
+            }
+
+            .list-group-numbered .list-group-item:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.07);
+            }
+
+            .navbar-nav .nav-link {
+                transition: color 0.3s;
+                color: var(--foreground);
+                font-size: 1.1rem;
+                padding: 8px 12px;
+            }
+
+            .navbar-nav .nav-link:hover {
+                color: var(--primary);
+            }
+
+            .navbar-nav .nav-link.active {
+                background-color: var(--primary);
+                color: white !important;
+                border-radius: 0.25rem;
+            }
+
+            /* Dropdown Styles */
+            .dropdown-menu {
+                background-color: var(--muted);
+                border: none;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-radius: 0.5rem;
+                padding: 0.5rem 0;
+                margin-top: 0.5rem;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                display: block;
+                position: absolute;
+                z-index: 1000;
+                min-width: 10rem;
+                list-style: none;
+                text-align: left;
+            }
+
+            .dropdown-menu[data-bs-popper="static"] {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .dropdown-item {
+                color: var(--foreground);
+                padding: 0.5rem 1rem;
+                clear: both;
+                font-weight: 400;
+                line-height: 1.5;
+                text-align: inherit;
+                white-space: nowrap;
+                background-color: transparent;
+                border: 0;
+                transition: background-color 0.3s ease, color 0.3s ease;
+                display: block;
+                width: 100%;
+                padding: 0.25rem 1.5rem;
+                clear: both;
+                font-weight: 400;
+                color: #212529;
+                text-align: inherit;
+                white-space: nowrap;
+                background-color: transparent;
+                border: 0;
+                font-size: 0.8rem; /* Reduced font size */
+            }
+
+            .dropdown-item:hover,
+            .dropdown-item:focus {
+                background-color: var(--primary);
+                color: white;
+                text-decoration: none;
+            }
+
+            .dropdown-divider {
+                height: 0;
+                margin: 0.5rem 0;
+                overflow: hidden;
+                border-top: 1px solid var(--muted-foreground);
+            }
+
+            .dropdown:hover .dropdown-menu {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .bubble {
+                position: absolute;
+                border-radius: 50%;
+                background-color: rgba(173, 216, 230, 0.3);
+                animation: float 4s infinite linear;
+                bottom: 0;
+            }
+
+            .bubble:nth-child(1) {
+                width: 40px;
+                height: 40px;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .bubble:nth-child(2) {
+                width: 60px;
+                height: 60px;
+                left: 25%;
+                animation-delay: 1s;
+            }
+
+            .bubble:nth-child(3) {
+                width: 30px;
+                height: 30px;
+                left: 45%;
+                animation-delay: 2s;
+            }
+
+            .bubble:nth-child(4) {
+                width: 70px;
+                height: 70px;
+                left: 65%;
+                animation-delay: 0.5s;
+            }
+
+            .bubble:nth-child(5) {
+                width: 50px;
+                height: 50px;
+                left: 80%;
+                animation-delay: 1.5s;
+            }
+
+            @keyframes float {
+                0% {
+                    transform: translateY(0);
+                    opacity: 0;
+                }
+                25% {
+                    opacity: 1;
+                }
+                75% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-120vh);
+                    opacity: 0;
+                }
+            }
+
+            footer {
+                background-color: var(--foreground);
+                color: var(--muted);
+                padding: 20px 0;
+            }
+
+            footer h5 {
+                color: var(--primary);
+                font-weight: 500;
+                margin-bottom: 15px;
+                font-size: 1.2rem;
+                font-family: 'Roboto Slab', serif;
+            }
+
+            footer a {
+                color: var(--muted);
+                text-decoration: none;
+                transition: color 0.3s;
+                font-size: 1.1rem;
+            }
+
+            footer a:hover {
+                color: var(--primary);
+            }
+
+            /* Media Queries for Responsiveness */
+            @media (max-width: 768px) {
+                .hero {
+                    padding: 100px 0;
+                }
+
+                .hero h1 {
+                    font-size: 2.5rem;
+                }
+
+                .hero p {
+                    font-size: 1rem;
+                }
+
+                .navbar-brand {
+                    font-size: 1.8rem;
+                }
+
+                .section-title {
+                    font-size: 1.7rem;
+                }
+            }
+
+            /* Base styles */
+            :root {
+                --primary: #0070f3;
+                --primary-hover: #0051a2;
+                --background: #ffffff;
+                --foreground: #000000;
+                --muted: #f5f5f5;
+                --border: #e5e5e5;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                background: var(--background);
+                color: var(--foreground);
+                line-height: 1.5;
+                padding: 0; /* Remove padding from body */
+            }
+
+            /* Container styles */
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 1rem;
+            }
+
+            .grid {
+                display: grid;
+                gap: 1.5rem;
+            }
+
+            @media (min-width: 768px) {
+                .grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            .space-y > * + * {
+                margin-top: 1rem;
+            }
+
+            /* Component styles */
+            .card {
+                background: var(--background);
+                border: 1px solid var(--border);
+                border-radius: 0.5rem;
+                padding: 1.5rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                transition: box-shadow 0.3s ease;
+            }
+
+            .card:hover {
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            }
+
+            .card-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+            }
+
+            .input-group {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .label {
+                font-weight: 500;
+                font-size: 0.875rem;
+            }
+
+            .input, .textarea {
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid var(--border);
+                border-radius: 0.25rem;
+                font-size: 0.875rem;
+                transition: border-color 0.3s ease;
+            }
+
+            .input:focus, .textarea:focus {
+                border-color: var(--primary);
+                outline: none;
+            }
+
+            .textarea {
+                min-height: 100px;
+                resize: vertical;
+            }
+
+            .button {
+                background: var(--primary);
+                color: white;
+                border: none;
+                border-radius: 0.25rem;
+                padding: 0.5rem 1rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s;
+                font-size: 1.1rem;
+            }
+
+            .button:hover {
+                background: var(--primary-hover);
+            }
+
+            .button-outline {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--foreground);
+                transition: background-color 0.2s, color 0.2s;
+            }
+
+            .button-outline:hover {
+                background: var(--muted);
+                color: var(--foreground);
+            }
+
+            .flex {
+                display: flex;
+                gap: 0.5rem;
+            }
+
+            .justify-between {
+                justify-content: space-between;
+            }
+
+            .items-center {
+                align-items: center;
+            }
+
+            .process-log {
+                background: var(--muted);
+                padding: 1rem;
+                border-radius: 0.5rem;
+                font-family: monospace;
+                font-size: 0.875rem;
+                overflow-x: auto;
+                white-space: pre;
+                max-height: 600px;
+                overflow-y: auto;
+            }
+
+            .copy-button {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                padding: 0.25rem;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                opacity: 0.5;
+                transition: opacity 0.3s ease;
+            }
+
+            .copy-button:hover {
+                opacity: 1;
+            }
+
+            .relative {
+                position: relative;
+            }
+
+            .text-center {
+                text-align: center;
+            }
+
+            .button-generate-key {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--foreground);
+                transition: background-color 0.2s, color 0.2s;
+                padding: 0.5rem 1rem;
+                border-radius: 0.25rem;
+            }
+
+            .button-generate-key:hover {
+                background: var(--muted);
+                color: var(--foreground);
+            }
+        </style>
+    </head>
+    <body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">CipherCraft</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">HOME</a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/DES">DES</a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/AES">AES</a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/RSA">RSA</a>
+
+
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Simulation
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/simulation/DES">DES Simulation</a></li>
+
+                            <li><a class="dropdown-item" href="/simulation/AES">AES Simulation</a></li>
+
+                            <li><a class="dropdown-item" href="/simulation/RSA">RSA Simulation</a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="container text-center">
+                <h1 class="display-4 fw-bold mb-4">Data Encryption Standard (DES)</h1>
+                <p class="lead mb-5">Explore the DES algorithm and its applications in modern cryptography.</p>
+                <a href="#overview" class="btn btn-primary btn-lg">Learn More <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </section>
+
+        <main class="container">
+            <div class="container" style="margin-top: 100px;">
+              <h2 class="text-center" style="margin-bottom: 1rem;">How This DES Demo Works</h2>
+              <p>
+                This demo provides a <b>simplified illustration</b> of DES (Data Encryption Standard) encryption and decryption.
+                <b>It is important to understand that this is a simulation and does not perform real DES encryption.</b>
+                Since actual DES involves complex mathematical operations, this demo uses <b>mock transformations</b> for visualization purposes only.
+                Here's a basic overview:
+              </p>
+              <ol class="list-group list-group-numbered">
+                <li class="list-group-item"><b>Input:</b> Enter the plaintext you wish to "encrypt" and a 16-byte hexadecimal key.</li>
+                <li class="list-group-item"><b>Encryption:</b> Clicking "Encrypt" will convert the plaintext to its hexadecimal representation and simulate the encryption process.</li>
+                <li class="list-group-item"><b>Decryption:</b> Clicking "Decrypt" will take the "encrypted" hexadecimal text and convert it back to the original plaintext.</li>
+                <li class="list-group-item"><b>Process Log:</b> The "Process Log" displays a <b>mock representation</b> of the DES encryption/decryption rounds, showing how the data might be transformed in each round. <b>This is not a real DES process.</b></li>
+              </ol>
+              <p><b>This simulation is for educational purposes only and should not be used for any real encryption or security applications.</b></p>
+            </div>
+            <h1>DES Encryption Demo</h1>
+            <div class="grid">
+                <!-- Input Card -->
+                <div class="card">
+                    <div class="card-title">Input</div>
+                    <div class="input-group">
+                        <label class="label" for="plaintext">Plaintext</label>
+                        <textarea class="textarea" id="plaintext" placeholder="Enter text to encrypt"></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="flex justify-between items-center">
+                            <label class="label" for="key">Key (64-bit hex)</label>
+                            <button class="button-generate-key" id="generateKey">Generate Key</button>
+                        </div>
+                        <input type="text" class="input" id="key" placeholder="Enter or generate 64-bit key (16 hex characters)">
+                    </div>
+
+                    <div class="flex">
+                        <button class="button" id="encrypt">Encrypt</button>
+                        <button class="button button-outline" id="decrypt">Decrypt</button>
+                    </div>
+                </div>
+
+                <!-- Output Card -->
+                <div class="card">
+                    <div class="card-title">Output</div>
+                    <div class="space-y">
+                        <div class="input-group">
+                            <label class="label">Encrypted Text (Hex)</label>
+                            <textarea class="textarea" id="encryptedText" readonly placeholder="Encrypted text will appear here"></textarea>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="label">Decrypted Text</label>
+                            <textarea class="textarea" id="decryptedText" readonly placeholder="Decrypted text will appear here"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Process Log Card -->
+            <div class="card">
+                <div class="card-title">Process Log</div>
+                <div class="relative">
+                    <pre id="binaryLog" class="process-log"></pre>
+                </div>
+            </div>
+        </main>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            class DES {
+                constructor() {
+                    this.IP = [
+                        58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28, 20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32,
+                        24, 16, 8, 57, 49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45, 37, 29, 21, 13, 5, 63, 55, 47,
+                        39, 31, 23, 15, 7,
+                    ];
+
+                    this.FP = [
+                        40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55, 23, 63, 31,
+                        38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29,
+                        36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27,
+                        34, 2, 42, 10, 50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25
+                    ];
+
+                    this.PC1 = [
+                        57, 49, 41, 33, 25, 17, 9, 1, 58, 50, 42, 34, 26, 18, 10, 2, 59, 51, 43, 35, 27, 19, 11, 3, 60, 52, 44, 36, 63,
+                        55, 47, 39, 31, 23, 15, 7, 62, 54, 46, 38, 30, 22, 14, 6, 61, 53, 45, 37, 29, 21, 13, 5, 28, 20, 12, 4,
+                    ];
+
+                    this.PC2 = [
+                        14, 17, 11, 24, 1, 5, 3, 28, 15, 6, 21, 10, 23, 19, 12, 4, 26, 8, 16, 7, 27, 20, 13, 2, 41, 52, 31, 37, 47, 55,
+                        30, 40, 51, 45, 33, 48, 44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32,
+                    ];
+
+                    this.E = [
+                        32, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 14, 15, 16, 17, 16, 17, 18, 19, 20, 21, 20, 21,
+                        22, 23, 24, 25, 24, 25, 26, 27, 28, 29, 28, 29, 30, 31, 32, 1,
+                    ];
+
+                    this.SBOXES = [
+                        // S1
+                        [
+                            [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
+                            [0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
+                            [4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0],
+                            [15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13],
+                        ],
+                        // S2
+                        [
+                            [15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10],
+                            [3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5],
+                            [0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15],
+                            [13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9],
+                        ],
+                        // S3
+                        [
+                            [10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8],
+                            [13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1],
+                            [13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7],
+                            [1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12],
+                        ],
+                        // S4
+                        [
+                            [7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15],
+                            [13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9],
+                            [10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4],
+                            [3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14],
+                        ],
+                        // S5
+                        [
+                            [2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9],
+                            [14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6],
+                            [4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14],
+                            [11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3],
+                        ],
+                        // S6
+                        [
+                            [12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11],
+                            [10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8],
+                            [9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6],
+                            [4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13],
+                        ],
+                        // S7
+                        [
+                            [4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1],
+                            [13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6],
+                            [1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2],
+                            [6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12],
+                        ],
+                        // S8
+                        [
+                            [13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7],
+                            [1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2],
+                            [7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8],
+                            [2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11],
+                        ]
+                    ];
+
+                    this.P = [
+                        16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10, 2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4,
+                        25,
+                    ];
+                }
+
+                permute(input, table) {
+                    if (!input) {
+                        console.error("Permute input is undefined or null.");
+                        return "";
+                    }
+                    return table.map((i) => input[i - 1]).join("");
+                }
+
+                generateSubkeys(key) {
+                    const logs = ["Generating subkeys:"];
+
+                    // Convert hex key to binary
+                    const keyBin = key
+                        .split("")
+                        .map((c) => Number.parseInt(c, 16).toString(2).padStart(4, "0"))
+                        .join("");
+
+                    const pc1Key = this.permute(keyBin, this.PC1);
+                    logs.push(`After PC-1: ${pc1Key}`);
+
+                    let left = pc1Key.slice(0, 28);
+                    let right = pc1Key.slice(28);
+
+                    const subkeys = [];
+                    const shifts = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
+
+                    for (let i = 0; i < 16; i++) {
+                        left = left.slice(shifts[i]) + left.slice(0, shifts[i]);
+                        right = right.slice(shifts[i]) + right.slice(0, shifts[i]);
+
+                        const combined = left + right;
+                        const subkey = this.permute(combined, this.PC2);
+                        subkeys.push(subkey);
+
+                        logs.push(`\nSubkey ${i + 1}:`);
+                        logs.push(`Left half: ${left}`);
+                        logs.push(`Right half: ${right}`);
+                        logs.push(`After PC-2: ${subkey}`);
+                    }
+
+                    return { subkeys, logs };
+                }
+
+                feistelFunction(right, subkey) {
+                    if (!right || !subkey) {
+                        console.error("Feistel Function input is undefined or null.");
+                        return null;
+                    }
+
+                    const expanded = this.permute(right, this.E);
+                    const xored = expanded
+                        .split("")
+                        .map((bit, i) => (bit === subkey[i] ? "0" : "1"))
+                        .join("");
+
+                    let sboxOutput = "";
+                    for (let i = 0; i < 8; i++) {
+                        const section = xored.slice(i * 6, (i + 1) * 6);
+                        const row = Number.parseInt(section[0] + section[5], 2);
+                        const col = Number.parseInt(section.slice(1, 5), 2);
+
+                        // Check if SBOXES[i][row] is defined before accessing [col]
+                        if (!this.SBOXES[i][row]) {
+                            console.error(`S-box row is undefined at SBOX[${i}][${row}]`);
+                            return null;
+                        }
+
+                        const sboxValue = this.SBOXES[i][row][col];
+
+                        if (sboxValue !== undefined) {
+                            sboxOutput += sboxValue.toString(2).padStart(4, "0");
+                        } else {
+                            console.error(`S-box value is undefined at SBOX[${i}][${row}][${col}]`);
+                            return null;
+                        }
+                    }
+
+                    return this.permute(sboxOutput, this.P);
+                }
+
+
+                encrypt(plaintext, key) {
+                    const logs = ["Starting DES Encryption Process", "=".repeat(50)];
+
+                    try {
+                        if (!plaintext) {
+                            throw new Error("Plaintext cannot be empty");
+                        }
+
+                        // Convert plaintext to binary
+                        const binaryText = plaintext
+                            .split("")
+                            .map((char) => char.charCodeAt(0).toString(2).padStart(8, "0"))
+                            .join("");
+
+                        logs.push("\nPlaintext to binary:");
+                        logs.push(binaryText);
+
+                        const afterIp = this.permute(binaryText, this.IP);
+                        logs.push("\nAfter Initial Permutation:");
+                        logs.push(afterIp);
+
+                        const { subkeys, logs: subkeyLogs } = this.generateSubkeys(key);
+                        logs.push(...subkeyLogs);
+
+                        let left = afterIp.slice(0, 32);
+                        let right = afterIp.slice(32);
+
+                        for (let round = 0; round < 16; round++) {
+                            logs.push(`\nRound ${round + 1}:`);
+                            logs.push(`Left: ${left}`);
+                            logs.push(`Right: ${right}`);
+
+                            const oldRight = right;
+                            right = left;
+                            const feistelResult = this.feistelFunction(oldRight, subkeys[round]);
+                            if (feistelResult === null) {
+                                throw new Error("Feistel function returned null, likely due to an undefined S-box value.");
+                            }
+                            left = oldRight
+                                .split("")
+                                .map((bit, i) => (bit === feistelResult[i] ? "0" : "1"))
+                                .join("");
+
+                            logs.push("After Feistel function:");
+                            logs.push(`New Left: ${left}`);
+                            logs.push(`New Right: ${right}`);
+                        }
+
+                        const preOutput = right + left;
+                        const ciphertext = this.permute(preOutput, this.FP);
+
+                        logs.push("\nFinal ciphertext (binary):");
+                        logs.push(ciphertext);
+
+                        const hexCiphertext = ciphertext
+                            .match(/.{1,8}/g)
+                            .map((byte) => Number.parseInt(byte, 2).toString(16).padStart(2, "0"))
+                            .join("");
+
+                        return { ciphertext: hexCiphertext, logs };
+                    } catch (error) {
+                        logs.push(`Error: ${error.message}`);
+                        throw error;
+                    }
+                }
+
+                decrypt(ciphertext, key) {
+                    const logs = ["Starting DES Decryption Process", "=".repeat(50)];
+
+                    try {
+                        if (!ciphertext) {
+                            throw new Error("Ciphertext cannot be empty");
+                        }
+
+                        const binaryText = ciphertext
+                            .split("")
+                            .map((char) => Number.parseInt(char, 16).toString(2).padStart(4, "0"))
+                            .join("");
+
+                        logs.push("\nCiphertext to binary:");
+                        logs.push(binaryText);
+
+                        const afterIp = this.permute(binaryText, this.IP);
+                        logs.push("\nAfter Initial Permutation:");
+                        logs.push(afterIp);
+
+                        const { subkeys, logs: subkeyLogs } = this.generateSubkeys(key);
+                        subkeys.reverse(); // Use subkeys in reverse order for decryption
+                        logs.push(...subkeyLogs);
+
+                        let left = afterIp.slice(0, 32);
+                        let right = afterIp.slice(32);
+
+                        for (let round = 0; round < 16; round++) {
+                            logs.push(`\nRound ${round + 1}:`);
+                            logs.push(`Left: ${left}`);
+                            logs.push(`Right: ${right}`);
+
+                            const oldRight = right;
+                            right = left;
+                            const feistelResult = this.feistelFunction(oldRight, subkeys[round]);
+                            if (feistelResult === null) {
+                                throw new Error("Feistel function returned null, likely due to an undefined S-box value.");
+                            }
+                            left = oldRight
+                                .split("")
+                                .map((bit, i) => (bit === feistelResult[i] ? "0" : "1"))
+                                .join("");
+
+                            logs.push("After Feistel function:");
+                            logs.push(`New Left: ${left}`);
+                            logs.push(`New Right: ${right}`);
+                        }
+
+                        const preOutput = right + left;
+                        const plainBinary = this.permute(preOutput, this.FP);
+
+                        logs.push("\nFinal plaintext (binary):");
+                        logs.push(plainBinary);
+
+                        let plaintext = "";
+                        for (let i = 0; i < plainBinary.length; i += 8) {
+                            const byte = plainBinary.substring(i, i + 8);
+                            const charCode = parseInt(byte, 2);
+                            if (!isNaN(charCode)) {
+                                plaintext += String.fromCharCode(charCode);
+                            }
+                        }
+
+                        return { plaintext, logs };
+                    } catch (error) {
+                        logs.push(`Error: ${error.message}`);
+                        throw error;
+                    }
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                const des = new DES();
+
+                // DOM Elements
+                const plaintextInput = document.getElementById("plaintext");
+                const keyInput = document.getElementById("key");
+                const encryptedTextArea = document.getElementById("encryptedText");
+                const decryptedTextArea = document.getElementById("decryptedText");
+                const binaryLogPre = document.getElementById("binaryLog");
+                const generateKeyBtn = document.getElementById("generateKey");
+                const encryptBtn = document.getElementById("encrypt");
+                const decryptBtn = document.getElementById("decrypt");
+
+                // Generate random key
+                generateKeyBtn.addEventListener("click", () => {
+                    const newKey = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+                    keyInput.value = newKey;
+                });
+
+                // Encrypt function
+                encryptBtn.addEventListener("click", () => {
+                    try {
+                        const plaintext = plaintextInput.value;
+                        const key = keyInput.value;
+
+                        if (!plaintext) {
+                            throw new Error("Plaintext cannot be empty");
+                        }
+                        if (key.length !== 16) {
+                            throw new Error("Key must be 16 characters long (64 bits)");
+                        }
+
+                        const { ciphertext, logs } = des.encrypt(plaintext, key);
+                        encryptedTextArea.value = ciphertext;
+                        decryptedTextArea.value = ""; // Clear decrypted text
+                        binaryLogPre.textContent = logs.join("\n");
+                    } catch (error) {
+                        binaryLogPre.textContent = `Error: ${error.message}`;
+                        encryptedTextArea.value = "";
+                    }
+                });
+
+                // Decrypt function
+                decryptBtn.addEventListener("click", () => {
+                    try {
+                        const encryptedText = encryptedTextArea.value;
+                        const key = keyInput.value;
+
+                        if (!encryptedText) {
+                            throw new Error("Encrypted text cannot be empty");
+                        }
+                        if (key.length !== 16) {
+                            throw new Error("Key must be 16 characters long (64 bits)");
+                        }
+
+                        const { plaintext, logs } = des.decrypt(encryptedText, key);
+                        decryptedTextArea.value = plaintext;
+                        binaryLogPre.textContent = logs.join("\n");
+                    } catch (error) {
+                        binaryLogPre.textContent = `Error: ${error.message}`;
+                        decryptedTextArea.value = "";
+                    }
+                });
+            });
+        </script>
+    </body>
+    </html>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherCraft - Data Encryption Standard (DES)</title>
+    <meta name="description" content="Explore the Data Encryption Standard (DES) algorithm in detail, covering its history, key generation, encryption/decryption processes, and real-world applications.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --background: #ffffff;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            color: var(--foreground);
+            background-color: var(--background);
+            overflow-x: hidden;
+            font-size: 1rem; /* Reduced body font size */
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-size: 2.3rem; /* Reduced navbar brand font size */
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .hero {
+            background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+            color: var(--foreground);
+            text-align: center;
+            padding: 150px 0; /* Reduced hero padding */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem; /* Reduced hero heading font size */
+            font-weight: bold;
+            margin-bottom: 15px; /* Reduced hero heading margin */
+            font-family: 'Roboto Slab', serif;
+            color: var(--foreground);
+        }
+
+        .hero p {
+            font-size: 1.3rem; /* Reduced hero paragraph font size */
+            margin-bottom: 30px; /* Reduced hero paragraph margin */
+            color: var(--foreground);
+        }
+
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            transition: background-color 0.3s, border-color 0.3s;
+            padding: 12px 28px; /* Reduced button padding */
+            font-size: 1.1rem; /* Reduced button font size */
+            border-radius: 5px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .text-muted {
+            color: var(--muted-foreground) !important;
+        }
+
+        .bg-light {
+            background-color: var(--muted) !important;
+        }
+
+        .section-title {
+            position: relative;
+            padding-bottom: 15px; /* Reduced section title padding */
+            margin-bottom: 30px; /* Reduced section title margin */
+            font-family: 'Roboto Slab', serif;
+            font-weight: 700;
+            font-size: 2.7rem; /* Reduced section title font size */
+            color: var(--foreground);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            height: 4px;
+            width: 60px; /* Reduced section title underline width */
+            background-color: var(--primary);
+        }
+
+        h2 {
+          font-family: 'Roboto Slab', serif;
+          font-weight: 700;
+          color: var(--foreground);
+          font-size: 2rem; /* Reduced h2 font size */
+        }
+
+        h3 {
+          font-family: 'Roboto Slab', serif;
+          font-weight: 400;
+          color: var(--foreground);
+          font-size: 1.4rem; /* Reduced h3 font size */
+        }
+
+        .feature-icon {
+            width: 90px; /* Reduced feature icon width */
+            height: 90px; /* Reduced feature icon height */
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.7rem; /* Reduced feature icon font size */
+            margin-bottom: 15px; /* Reduced feature icon margin */
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .feature-icon:hover {
+            transform: rotate(360deg) scale(1.1); /* Reduced feature icon hover scale */
+        }
+
+        .list-group-numbered .list-group-item {
+            margin-bottom: 0.6rem; /* Reduced list group item margin */
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            font-size: 1.1rem; /* Reduced list group item font size */
+        }
+
+        .navbar-nav .nav-link {
+            transition: color 0.3s;
+            color: var(--foreground);
+            font-size: 1.1rem; /* Reduced navbar link font size */
+            padding: 8px 12px; /* Reduced navbar link padding */
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-dark);
+        }
+
+        .navbar-nav .nav-link.active {
+            background-color: var(--primary);
+            color: white !important;
+            border-radius: 0.25rem;
+        }
+
+        /* Dropdown Styles */
+        .dropdown-menu {
+            background-color: var(--muted);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.4rem 0; /* Reduced dropdown padding */
+            margin-top: 0.4rem; /* Reduced dropdown margin */
+            opacity: 0;
+            transform: translateY(-8px); /* Reduced dropdown transform */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            display: block;
+            position: absolute;
+            z-index: 1000;
+            min-width: 9rem; /* Reduced dropdown width */
+            list-style: none;
+            text-align: left;
+        }
+
+        .dropdown-menu[data-bs-popper="static"] {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            color: var(--foreground);
+            padding: 0.5rem 1rem; /* Reduced dropdown item padding */
+            clear: both;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: inherit;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: block;
+            width: 100%;
+            font-size: 1rem; /* Reduced dropdown item font size */
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+        }
+
+        .dropdown-divider {
+            height: 0;
+            margin: 0.4rem 0; /* Reduced dropdown divider margin */
+            overflow: hidden;
+            border-top: 1px solid var(--muted-foreground);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(173, 216, 230, 0.3);
+            animation: float 4s infinite linear;
+            bottom: 0;
+        }
+
+        .bubble:nth-child(1) {
+            width: 30px; /* Reduced bubble width */
+            height: 30px; /* Reduced bubble height */
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bubble:nth-child(2) {
+            width: 50px; /* Reduced bubble width */
+            height: 50px; /* Reduced bubble height */
+            left: 25%;
+            animation-delay: 1s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 25px; /* Reduced bubble width */
+            height: 25px; /* Reduced bubble height */
+            left: 45%;
+            animation-delay: 2s;
+        }
+
+        .bubble:nth-child(4) {
+            width: 60px; /* Reduced bubble width */
+            height: 60px; /* Reduced bubble height */
+            left: 65%;
+            animation-delay: 0.5s;
+        }
+
+        .bubble:nth-child(5) {
+            width: 40px; /* Reduced bubble width */
+            height: 40px; /* Reduced bubble height */
+            left: 80%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            25% {
+                opacity: 1;
+            }
+            75% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120vh);
+                opacity: 0;
+            }
+        }
+
+        footer {
+            background-color: var(--foreground);
+            color: var(--muted);
+            padding: 25px 0; /* Reduced footer padding */
+        }
+
+        footer h5 {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 15px; /* Reduced footer heading margin */
+            font-size: 1.2rem; /* Reduced footer heading font size */
+            }
+
+            footer a {
+                color: var(--muted);
+                text-decoration: none;
+                transition: color 0.3s;
+                font-size: 1.1rem; /* Reduced footer link font size */
+            }
+
+            footer a:hover {
+                color: var(--primary);
+            }
+
+            /* Media Queries for Responsiveness */
+            @media (max-width: 768px) {
+                .hero {
+                    padding: 120px 0; /* Reduced hero padding */
+                }
+
+                .hero h1 {
+                    font-size: 2.8rem; /* Reduced hero heading font size */
+                }
+
+                .hero p {
+                    font-size: 1.2rem; /* Reduced hero paragraph font size */
+                }
+
+                .navbar-brand {
+                    font-size: 2rem; /* Reduced navbar brand font size */
+                }
+
+                .section-title {
+                    font-size: 2.3rem; /* Reduced section title font size */
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">CipherCraft</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">HOME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/DES">DES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/AES">AES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/RSA">RSA</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Simulation
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="/simulation/DES">DES Simulation</a></li>
+                                <li><a class="dropdown-item" href="/simulation/AES">AES Simulation</a></li>
+                                <li><a class="dropdown-item" href="/simulation/RSA">RSA Simulation</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <section class="hero">
+            <div class="hero-content">
+                <div class="container text-center">
+                    <h1 class="display-4 fw-bold mb-4">Data Encryption Standard (DES)</h1>
+
+                    <p class="lead mb-5">Explore the DES algorithm, an early symmetric-key block cipher.</p>
+                    <a href="#overview" class="btn btn-primary btn-lg">Explore DES <i class="fas fa-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+        </section>
+
+        <section id="overview" class="py-5">
+            <div class="container">
+                        <h2 class="text-center section-title mb-5">DES: An Overview</h2>
+
+                <div class="card">
+                    <div class="card-body">
+                        <p class="card-text">The Data Encryption Standard (DES) is a symmetric-key block cipher published by the National Bureau of Standards (NBS) in 1977. While it has been superseded by AES, DES was widely used and influential in the advancement of cryptography. AES is now the preferred standard due to its enhanced security features.</p>
+
+                        <p class="card-text">DES operates on 64-bit blocks of data with a 56-bit key. Despite its relatively short key length, DES played a crucial role in shaping modern cryptographic practices.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="key-generation" class="py-5 bg-light">
+            <div class="container">
+                        <h2 class="text-center section-title mb-5">DES Key Generation</h2>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="h4 mb-4">Key Generation Process</h3>
+                        <p>DES key generation involves several steps to derive subkeys from the original 56-bit key. These subkeys are used in each round of the encryption process.</p>
+                        <ol class="list-group list-group-numbered">
+                            <li class="list-group-item"><b>Initial Key:</b> The process begins with the original 56-bit encryption key.</li>
+                            <li class="list-group-item"><b>Permuted Choice 1 (PC-1):</b> The 56-bit key is subjected to a permutation, resulting in two 28-bit halves (C0 and D0).</li>
+                            <li class="list-group-item"><b>Left Shifts:</b> Each half is cyclically shifted left by either one or two bits, depending on the round.</li>
+                            <li class="list-group-item"><b>Permuted Choice 2 (PC-2):</b> The shifted halves are combined and subjected to another permutation to produce a 48-bit subkey.</li>
+                            <li class="list-group-item"><b>Round Key Generation:</b> This process is repeated for each of the 16 rounds, generating 16 unique 48-bit subkeys.</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="/static/images/DES_Key.png" alt="DES Key Generation Process" class="img-fluid rounded">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="encryption" class="py-5">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">DES Encryption Process</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="h4 mb-4">Encryption Steps</h3>
+                        <p>DES encryption involves several steps, including an initial permutation (IP), 16 rounds of Feistel network processing, and a final inverse initial permutation (IP^-1).</p>
+                        <ol class="list-group list-group-numbered">
+                            <li class="list-group-item"><b>Initial Permutation (IP):</b> The 64-bit plaintext block is subjected to an initial permutation.</li>
+                            <li class="list-group-item"><b>Feistel Rounds:</b> The permuted block is divided into two 32-bit halves (L0 and R0), and 16 rounds of the Feistel network are applied.</li>
+                            <li class="list-group-item"><b>Round Function (F):</b> In each round, the right half (Ri-1) is expanded to 48 bits, XORed with a 48-bit subkey, passed through S-boxes, and permuted.</li>
+                            <li class="list-group-item"><b>XOR and Swap:</b> The output of the round function is XORed with the left half (Li-1), and the halves are swapped (Li = Ri-1, Ri = Li-1 XOR F(Ri-1, Ki)).</li>
+                            <li class="list-group-item"><b>Final Permutation (IP^-1):</b> After 16 rounds, the left and right halves are combined and subjected to the inverse of the initial permutation.</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="/static/images/DES_encryption.gif" alt="DES Encryption Process" class="img-fluid rounded">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="decryption" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">DES Decryption Process</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="h4 mb-4">Decryption Steps</h3>
+                        <p>DES decryption is the reverse of encryption, applying the same steps in reverse order with the subkeys used in reverse order.</p>
+                        <ol class="list-group list-group-numbered">
+                            <li class="list-group-item"><b>Initial Permutation (IP):</b> The 64-bit ciphertext block is subjected to the initial permutation.</li>
+                            <li class="list-group-item"><b>Feistel Rounds:</b> The permuted block is divided into two 32-bit halves, and 16 rounds of the Feistel network are applied with subkeys in reverse order.</li>
+                            <li class="list-group-item"><b>Round Function (F):</b> Same as in encryption, but using subkeys in reverse order.</li>
+                            <li class="list-group-item"><b>XOR and Swap:</b> The output of the round function is XORed with the left half, and the halves are swapped.</li>
+                            <li class="list-group-item"><b>Final Permutation (IP^-1):</b> After 16 rounds, the left and right halves are combined and subjected to the inverse of the initial permutation.</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="/static/images/DES_decryption.png" alt="DES Decryption Process" class="img-fluid rounded">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="initial-permutation" class="py-5">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">Initial Permutation (IP)</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="h4 mb-4">Detailed Explanation</h3>
+                        <p class="card-text">The initial permutation (IP) is the first step in the DES encryption process. It rearranges the bits of the 64-bit plaintext block according to a fixed permutation table.</p>
+                        <p class="card-text">This permutation does not provide any cryptographic security but is designed to make the hardware implementation easier.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="feistel-network" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">Feistel Network</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="h4 mb-4">Detailed Explanation</h3>
+                        <p class="card-text">The Feistel network is a symmetric block cipher structure used in DES. It divides the block into two halves and performs a series of rounds, each applying a round function to one half and XORing the result with the other half.</p>
+                        <p class="card-text">This structure allows the encryption and decryption processes to be very similar, simplifying the implementation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="round-function" class="py-5">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">Round Function (F)</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="h4 mb-4">Detailed Explanation</h3>
+                        <p class="card-text">The round function (F) is a crucial component of the Feistel network in DES. It takes a 32-bit input (Ri-1) and a 48-bit subkey (Ki) and performs several operations to produce a 32-bit output.</p>
+                        <p class="card-text">The operations include expansion to 48 bits, XOR with the subkey, S-box substitution, and permutation.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="s-boxes" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">S-Boxes</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="h4 mb-4">Detailed Explanation</h3>
+                        <p class="card-text">The S-boxes (Substitution boxes) are the only non-linear elements in DES and provide the algorithm's security. DES has eight S-boxes, each taking a 6-bit input and producing a 4-bit output.</p>
+                        <p class="card-text">These S-boxes are carefully designed to resist cryptanalysis and provide confusion.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="applications" class="py-5">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">Real-World Applications of DES</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h3>Financial Transactions</h3>
+                        <p>DES was used to secure financial transactions, such as those involving ATMs and electronic fund transfers.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>Government Communications</h3>
+                        <p>DES was employed to protect sensitive government communications and data.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Legacy Systems</h3>
+                        <p>DES is still found in some legacy systems, although it is generally recommended to use more secure algorithms like AES.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">Advantages & Disadvantages</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h3 class="h4 mb-4">Advantages</h3>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-check text-success me-2"></i>Well-understood and widely studied</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Simple to implement in hardware</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h3 class="h4 mb-4">Disadvantages</h3>
+                                <ul class="list-unstyled">
+                                    <li><i class="fas fa-times text-danger me-2"></i>Short key length (56 bits) makes it vulnerable to brute-force attacks</li>
+                                    <li><i class="fas fa-times text-danger me-2"></i>Superseded by more secure algorithms like AES</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-dark text-light py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>CipherCraft</h5>
+                        <p class="small">Exploring the world of cryptography through interactive learning.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-light">About Us</a></li>
+                            <li><a href="#" class="text-light">Contact</a></li>
+                            <li><a href="#" class="text-light">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Follow Us</h5>
+                        <div class="d-flex">
+                            <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-light me-3"><i class="fab fa-github"></i></a>
+                            <a href="#" class="text-light"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+                    if (href !== '#') {
+                        const targetElement = document.querySelector(href);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                            });
+            });
+
+            // Add active class to nav items when scrolling
+            window.addEventListener('scroll', () => {
+                let current = '';
+                document.querySelectorAll('section').forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 60) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                document.querySelectorAll('.navbar-nav .nav-link').forEach(li => {
+                    li.classList.remove('active');
+                    if (li.getAttribute('href').substring(1) === current) {
+                        li.classList.add('active');
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

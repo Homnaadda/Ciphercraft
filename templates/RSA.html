@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherCraft - RSA Encryption</title>
+    <meta name="description" content="Learn about the RSA encryption algorithm, its history, key generation, encryption process, and applications in secure communication.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --background: #ffffff;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            color: var(--foreground);
+            background-color: var(--background);
+            overflow-x: hidden;
+            font-size: 1rem; /* Updated body font size */
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-size: 2.3rem; /* Updated */
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .hero {
+            background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+            color: var(--foreground);
+            text-align: center;
+            padding: 200px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem; /* Updated */
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-family: 'Roboto Slab', serif;
+            color: var(--foreground);
+        }
+
+        .hero p {
+            font-size: 1.3rem; /* Updated */
+            margin-bottom: 40px;
+            color: var(--foreground);
+        }
+
+        .section-title {
+            font-family: 'Roboto Slab', serif;
+            font-weight: 700;
+            font-size: 2.7rem; /* Updated */
+            color: var(--foreground);
+        }
+
+        h2 {
+            font-family: 'Roboto Slab', serif;
+            font-weight: 700;
+            color: var(--foreground);
+            font-size: 2rem; /* Updated */
+        }
+
+        h3 {
+            font-family: 'Roboto Slab', serif;
+            font-weight: 400;
+            color: var(--foreground);
+            font-size: 1.4rem; /* Updated */
+        }
+
+        .btn-primary {
+            font-size: 1.1rem; /* Updated */
+        }
+
+        .list-group-numbered .list-group-item {
+            font-size: 1.1rem; /* Updated */
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 1.1rem; /* Updated */
+        }
+
+        footer h5 {
+            font-size: 1.2rem; /* Updated */
+        }
+
+        footer a {
+            font-size: 1.1rem; /* Updated */
+        }
+        
+        footer a:hover {
+            color: var(--primary);
+        }
+
+        .navbar-nav .nav-link {
+            transition: color 0.3s;
+            color: var(--foreground);
+            font-size: 1.2rem; /* Increased */
+            padding: 10px 15px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-dark);
+        }
+
+        .navbar-nav .nav-link.active {
+            background-color: var(--primary);
+            color: white !important;
+            border-radius: 0.25rem;
+        }
+
+        /* Dropdown Styles */
+        .dropdown-menu {
+            background-color: var(--muted);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            display: block;
+            position: absolute;
+            z-index: 1000;
+            min-width: 10rem;
+            list-style: none;
+            text-align: left;
+        }
+
+        .dropdown-menu[data-bs-popper="static"] {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            color: var(--foreground);
+            padding: 0.6rem 1.2rem; /* Increased */
+            clear: both;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: inherit;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: block;
+            width: 100%;
+            padding: 0.25rem 1.5rem;
+            clear: both;
+            font-weight: 400;
+            color: #212529;
+            text-align: inherit;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
+            font-size: 1.1rem; /* Increased */
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+        }
+
+        .dropdown-divider {
+            height: 0;
+            margin: 0.5rem 0;
+            overflow: hidden;
+            border-top: 1px solid var(--muted-foreground);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(173, 216, 230, 0.3);
+            animation: float 4s infinite linear;
+            bottom: 0;
+        }
+
+        .bubble:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bubble:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            left: 25%;
+            animation-delay: 1s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 30px;
+            height: 30px;
+            left: 45%;
+            animation-delay: 2s;
+        }
+
+        .bubble:nth-child(4) {
+            width: 70px;
+            height: 70px;
+            left: 65%;
+            animation-delay: 0.5s;
+        }
+
+        .bubble:nth-child(5) {
+            width: 50px;
+            height: 50px;
+            left: 80%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes float {
+            0% {
+            transform: translateY(0);
+            opacity: 0;
+            }
+            25% {
+            opacity: 1;
+            }
+            75% {
+            opacity: 1;
+            }
+            100% {
+            transform: translateY(-120vh);
+            opacity: 0;
+            }
+        }
+
+        footer {
+            background-color: var(--foreground);
+            color: var(--muted);
+            padding: 30px 0;
+        }
+
+        footer h5 {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.4rem; /* Increased */
+        }
+
+        footer a {
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 1.2rem; /* Increased */
+        }
+
+        footer a:hover {
+            color: var(--primary);
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .hero {
+            padding: 150px 0;
+            }
+
+            .hero h1 {
+            font-size: 3.3rem; /* Increased */
+            }
+
+            .hero p {
+            font-size: 1.4rem; /* Increased */
+            }
+
+            .navbar-brand {
+            font-size: 2.3rem; /* Increased */
+            }
+
+            .section-title {
+            font-size: 2.7rem; /* Increased */
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">CipherCraft</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+<a class="nav-link" href="/">HOME</a>
+
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/DES">DES</a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/AES">AES</a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/RSA">RSA</a>
+
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Simulation
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/simulation/DES">DES Simulation</a></li>
+                            <li><a class="dropdown-item" href="/simulation/AES">AES Simulation</a></li>
+                            <li><a class="dropdown-item" href="/simulation/RSA">RSA Simulation</a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="container text-center">
+                <h1 class="display-4 fw-bold mb-4">RSA Encryption</h1>
+                <p class="lead mb-5">Explore the world of RSA encryption, its principles, and applications in secure communication.</p>
+                <a href="#overview" class="btn btn-primary btn-lg">Learn More <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </section>
+
+    <section id="overview" class="py-5">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">Introduction to RSA</h2>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text">RSA (Rivest–Shamir–Adleman) is a public-key cryptosystem that is widely used for secure data transmission. It is one of the oldest and most widely used public-key cryptosystems, named after its inventors Ron Rivest, Adi Shamir, and Leonard Adleman, who first publicly described it in 1977. RSA is based on the practical difficulty of factoring the product of two large prime numbers, the "factoring problem". The keys for the RSA algorithm are generated from a mathematical function that makes it exceptionally difficult to reverse engineer, ensuring secure communication.</p>
+                    <p class="card-text">RSA is employed in a multitude of applications, including secure web browsing (HTTPS), email encryption (PGP), digital signatures, and key exchange. It is a fundamental component of modern cryptography and is essential for securing digital communications across various platforms and industries.</p>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h3 class="h5">Key Features</h3>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Public-key Cryptosystem:</b> RSA utilizes a pair of keys - a public key for encryption and a private key for decryption.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Asymmetric Key Structure:</b> The public and private keys are mathematically linked but distinct, ensuring that knowledge of the public key does not compromise the private key.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Variable Key Size:</b> RSA supports variable key sizes, typically 1024 bits, 2048 bits, or more, with larger key sizes providing greater security.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Factoring Problem:</b> The security of RSA relies on the computational difficulty of factoring large numbers into their prime factors.</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="h5">Historical Significance</h3>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Invented in 1977:</b> RSA was developed in 1977 by Ron Rivest, Adi Shamir, and Leonard Adleman at MIT.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Early Public-Key Cryptosystem:</b> It was one of the first public-key cryptosystems and has had a significant impact on the field of cryptography.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Wide Adoption:</b> RSA has been widely adopted in various applications, contributing to its status as a foundational technology in modern digital security.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="key-generation" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">RSA Key Generation</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h4 mb-4">Key Generation Steps</h3>
+                    <p>The key generation process involves selecting two large prime numbers, calculating their product, and deriving the public and private keys. The security of RSA depends on the secrecy of the private key, which is computationally infeasible to derive from the public key if the prime factors are sufficiently large.</p>
+                    <ol class="list-group list-group-numbered">
+                        <li class="list-group-item"><b>Choose Two Distinct Prime Numbers (p and q):</b> Select two large, distinct prime numbers, p and q. These primes should be randomly chosen and of similar bit length for optimal security.</li>
+                        <li class="list-group-item"><b>Compute n = p * q (Modulus):</b> Calculate n, which is the modulus for both the public and private keys. The modulus n is the product of p and q.</li>
+                        <li class="list-group-item"><b>Compute φ(n) = (p-1)(q-1) (Euler's Totient):</b> Compute Euler's totient function φ(n), which is equal to (p-1)(q-1). This value is crucial for determining the encryption and decryption exponents.</li>
+                        <li class="list-group-item"><b>Choose an Integer e (Public Exponent):</b> Select an integer e such that 1 < e < φ(n) and gcd(e, φ(n)) = 1, where gcd is the greatest common divisor. A common choice for e is 65537 (2<sup>16</sup> + 1), as it provides a good balance between security and performance.</li>
+                        <li class="list-group-item"><b>Compute d (Private Exponent):</b> Compute the modular multiplicative inverse of e modulo φ(n), denoted as d. This means finding d such that d * e ≡ 1 (mod φ(n)). The extended Euclidean algorithm is often used to compute d.</li>
+                        <li class="list-group-item"><b>Public Key and Private Key:</b> The public key is (n, e), and the private key is (n, d). The private key must be kept secret, while the public key can be widely distributed.</li>
+                    </ol>
+                </div>
+                <div class="col-md-6">
+                    <img src="/static/images/RSA_Key.png" alt="RSA Key Generation Process" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="encryption" class="py-5">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">RSA Encryption Process</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h4 mb-4">Encryption Steps</h3>
+                    <p>The encryption process involves transforming the plaintext message into ciphertext using the recipient's public key. The message is raised to the power of the public exponent modulo n, resulting in an encrypted message that can only be decrypted by the holder of the corresponding private key.</p>
+                    <ol class="list-group list-group-numbered">
+                        <li class="list-group-item"><b>Obtain Recipient's Public Key (n, e):</b> Acquire the public key (n, e) of the intended recipient. This key is used to encrypt the plaintext message.</li>
+                        <li class="list-group-item"><b>Represent Plaintext Message as an Integer (m):</b> Convert the plaintext message into an integer m such that 0 ≤ m < n. If the message is longer than n, it must be divided into smaller blocks and encrypted separately.</li>
+                        <li class="list-group-item"><b>Compute Ciphertext (c):</b> Calculate the ciphertext c using the formula c = m<sup>e</sup> mod n. This modular exponentiation transforms the plaintext message into an encrypted form.</li>
+                        <li class="list-group-item"><b>Send Ciphertext (c) to Recipient:</b> Transmit the ciphertext c to the recipient. The recipient uses their private key to decrypt the message and recover the original plaintext.</li>
+                    </ol>
+                    <p class="mt-3"><b>Mathematical Representation:</b><br>
+                    Encryption: c = m<sup>e</sup> mod n<br>
+                    Where:<br>
+                    c = Ciphertext<br>
+                    m = Plaintext message (integer)<br>
+                    e = Public exponent<br>
+                    n = Modulus</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="/static/images/RSA_encrypt.png" alt="RSA Encryption Process" class="img-fluid rounded">
+                    
+            </div>
+        </div>
+    </section>
+
+    <section id="decryption" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">RSA Decryption Process</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h4 mb-4">Decryption Steps</h3>
+                    <p>The decryption process involves transforming the ciphertext back into the original plaintext message using the recipient's private key. The ciphertext is raised to the power of the private exponent modulo n, resulting in the recovery of the original message.</p>
+                    <ol class="list-group list-group-numbered">
+                        <li class="list-group-item"><b>Obtain Ciphertext (c):</b> Receive the ciphertext c from the sender. This is the encrypted message that needs to be decrypted.</li>
+                        <li class="list-group-item"><b>Use Private Key (n, d) to Compute Plaintext (m):</b> Calculate the plaintext message m using the formula m = c<sup>d</sup> mod n, where (n, d) is the recipient's private key.</li>
+                        <li class="list-group-item"><b>Result is Original Plaintext Message (m):</b> The result m is the original plaintext message. Ensure that the message is correctly interpreted and any necessary post-processing is applied.</li>
+                    </ol>
+                    <p class="mt-3"><b>Mathematical Representation:</b><br>
+                    Decryption: m = c<sup>d</sup> mod n<br>
+                    Where:<br>
+                    m = Plaintext message (integer)<br>
+                    c = Ciphertext<br>
+                    d = Private exponent<br>
+                    n = Modulus</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="/static/images/RSA_decryption.png" alt="RSA Decryption Process" class="img-fluid rounded">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="applications" class="py-5">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">Applications of RSA</h2>
+            <p class="text-center">RSA is a versatile cryptographic algorithm with numerous applications in securing digital communications and data. Its ability to provide both encryption and digital signatures makes it a fundamental component of modern security systems.</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Secure Web Browsing (HTTPS)</h3>
+                    <p>RSA is used in the Transport Layer Security (TLS) protocol, which is the foundation of HTTPS. It secures communication between web browsers and servers, protecting sensitive data such as login credentials and financial information.</p>
+                    <p><b>Details:</b> RSA is used during the TLS handshake to exchange symmetric keys, which are then used for encrypting the actual data transmitted between the client and server.</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email Encryption (PGP)</h3>
+                    <p>RSA is used in Pretty Good Privacy (PGP) to encrypt email communications. It ensures that email messages are protected from unauthorized access, maintaining the confidentiality of sensitive correspondence.</p>
+                    <p><b>Details:</b> RSA can be used to encrypt the entire email message or just the symmetric key used to encrypt the message, providing a secure means of communication.</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-icon">
+                        <i class="fas fa-signature"></i>
+                    </div>
+                    <h3>Digital Signatures</h3>
+                    <p>RSA is used to create digital signatures, which are used to verify the authenticity and integrity of digital documents. This ensures that documents have not been tampered with and that they originate from a trusted source.</p>
+                    <p><b>Details:</b> A digital signature is created by encrypting a hash of the document with the sender's private key. The recipient can verify the signature by decrypting the hash with the sender's public key and comparing it to a newly computed hash of the document.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">Advantages & Disadvantages</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="h4 mb-4">Advantages</h3>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i><b>Widely Used and Well-Tested:</b> RSA has been extensively used and analyzed, making it a trusted and reliable cryptographic algorithm.</li>
+                                <li><i class="fas fa-check text-success me-2"></i><b>Provides Both Encryption and Digital Signatures:</b> RSA can be used for both encryption and digital signatures, making it a versatile tool for securing digital communications.</li>
+                                <li><i class="fas fa-check text-success me-2"></i><b>High Level of Security:</b> When used with sufficiently large key sizes (2048 bits or more), RSA provides a high level of security against known attacks.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="h4 mb-4">Disadvantages</h3>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-times text-danger me-2"></i><b>Slower Compared to Symmetric-Key Algorithms:</b> RSA is significantly slower than symmetric-key algorithms like AES, making it less suitable for encrypting large amounts of data.</li>
+                                <li><i class="fas fa-times text-danger me-2"></i><b>Vulnerable to Attacks if Key is Not Generated Properly:</b> If the prime numbers used for key generation are not chosen carefully or if the implementation is flawed, RSA can be vulnerable to attacks.</li>
+                                <li><i class="fas fa-times text-danger me-2"></i><b>Requires Large Key Sizes:</b> To maintain adequate security, RSA requires large key sizes, which can increase computational overhead and storage requirements.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>CipherCraft</h5>
+                    <p class="small">Exploring the world of cryptography through interactive learning.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">About Us</a></li>
+                        <li><a href="#" class="text-light">Contact</a></li>
+                        <li><a href="#" class="text-light">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Follow Us</h5>
+                    <div class="d-flex">
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    const targetElement = document.querySelector(href);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+                        });
+        });
+
+        // Add active class to nav items when scrolling
+        window.addEventListener('scroll', () => {
+            let current = '';
+            document.querySelectorAll('section').forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 60) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.navbar-nav .nav-link').forEach(li => {
+                li.classList.remove('active');
+                if (li.getAttribute('href').substring(1) === current) {
+                    li.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

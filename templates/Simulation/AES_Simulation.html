@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AES Encryption Demo</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha525-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --primary: #3b82f6;
+                --primary-dark: #2563eb;
+                --background: #ffffff;
+                --foreground: #0f172a;
+                --muted: #f1f5f9;
+                --muted-foreground: #64748b;
+            }
+
+            body {
+                font-family: 'Nunito', sans-serif;
+                color: var(--foreground);
+                background-color: var(--background);
+                overflow-x: hidden;
+                font-size: 1rem;
+            }
+
+            .navbar {
+                background-color: rgba(255, 255, 255, 0.8);
+                backdrop-filter: blur(10px);
+                transition: background-color 0.3s ease;
+            }
+
+            .navbar:hover {
+                background-color: rgba(255, 255, 255, 0.9);
+            }
+
+            .navbar-brand {
+                font-size: 2.3rem;
+                font-weight: bold;
+                color: var(--primary);
+                transition: color 0.3s ease;
+            }
+
+            .navbar-brand:hover {
+                color: var(--primary-dark);
+            }
+
+            .hero {
+                background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+                color: var(--foreground);
+                text-align: center;
+                padding: 150px 0;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 255, 255, 0);
+                z-index: 1;
+            }
+
+            .hero-content {
+                position: relative;
+                z-index: 2;
+            }
+
+            .hero h1 {
+                font-size: 3.5rem;
+                font-weight: bold;
+                margin-bottom: 15px;
+                font-family: 'Roboto Slab', serif;
+                color: var(--foreground);
+            }
+
+            .hero p {
+                font-size: 1.3rem;
+                margin-bottom: 30px;
+                color: var(--foreground);
+            }
+
+            .card {
+                transition: transform 0.3s, box-shadow 0.3s;
+                border: none;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                border-radius: 10px;
+            }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-primary {
+                background-color: var(--primary);
+                border-color: var(--primary);
+                transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+                padding: 12px 28px;
+                font-size: 1.1rem;
+                border-radius: 5px;
+            }
+
+            .btn-primary:hover {
+                background-color: var(--primary-dark);
+                border-color: var(--primary-dark);
+                transform: scale(1.05);
+            }
+
+            .text-muted {
+                color: var(--muted-foreground) !important;
+            }
+
+            .bg-light {
+                background-color: var(--muted) !important;
+            }
+
+            .section-title {
+                position: relative;
+                padding-bottom: 15px;
+                margin-bottom: 30px;
+                font-family: 'Roboto Slab', serif;
+                font-weight: 700;
+                font-size: 2.7rem;
+                color: var(--foreground);
+            }
+
+            .section-title::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                bottom: 0;
+                transform: translateX(-50%);
+                height: 4px;
+                width: 70px;
+                background-color: var(--primary);
+            }
+
+            h2 {
+              font-family: 'Roboto Slab', serif;
+              font-weight: 700;
+              color: var(--foreground);
+              font-size: 2rem;
+            }
+
+            h3 {
+              font-family: 'Roboto Slab', serif;
+              font-weight: 400;
+              color: var(--foreground);
+              font-size: 1.4rem;
+            }
+
+            .feature-icon {
+                width: 90px;
+                height: 90px;
+                background-color: var(--primary);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.5rem;
+                margin-bottom: 15px;
+                transition: transform 0.5s ease-in-out;
+            }
+
+            .feature-icon:hover {
+                transform: rotate(360deg) scale(1.2);
+            }
+
+            .list-group-numbered .list-group-item {
+                margin-bottom: 0.6rem;
+                border: none;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+                border-radius: 8px;
+                font-size: 1.1rem;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .list-group-numbered .list-group-item:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .navbar-nav .nav-link {
+                transition: color 0.3s;
+                color: var(--foreground);
+                font-size: 1.1rem;
+                padding: 8px 12px;
+            }
+
+            .navbar-nav .nav-link:hover {
+                color: var(--primary-dark);
+            }
+
+            .navbar-nav .nav-link.active {
+                background-color: var(--primary);
+                color: white !important;
+                border-radius: 0.25rem;
+            }
+
+            /* Dropdown Styles */
+            .dropdown-menu {
+                background-color: var(--muted);
+                border: none;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                border-radius: 0.5rem;
+                padding: 0.4rem 0;
+                margin-top: 0.4rem;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                display: block;
+                position: absolute;
+                z-index: 1000;
+                min-width: 8rem;
+                list-style: none;
+                text-align: left;
+            }
+
+            .dropdown-menu[data-bs-popper="static"] {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .dropdown-item {
+                color: var(--foreground);
+                padding: 0.5rem 1rem;
+                clear: both;
+                font-weight: 400;
+                line-height: 1.5;
+                text-align: inherit;
+                white-space: nowrap;
+                background-color: transparent;
+                border: 0;
+                transition: background-color 0.3s ease, color 0.3s ease;
+                display: block;
+                width: 100%;
+                padding: 0.25rem 1.5rem;
+                clear: both;
+                font-weight: 400;
+                color: #212529;
+                text-align: inherit;
+                white-space: nowrap;
+                background-color: transparent;
+                border: 0;
+                font-size: 0.9rem;
+            }
+
+            .dropdown-item:hover,
+            .dropdown-item:focus {
+                background-color: var(--primary);
+                color: white;
+                text-decoration: none;
+            }
+
+            .dropdown-divider {
+                height: 0;
+                margin: 0.4rem 0;
+                overflow: hidden;
+                border-top: 1px solid var(--muted-foreground);
+            }
+
+            .dropdown:hover .dropdown-menu {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            .bubble {
+                position: absolute;
+                border-radius: 50%;
+                background-color: rgba(173, 216, 230, 0.3);
+                animation: float 4s infinite linear;
+                bottom: 0;
+            }
+
+            .bubble:nth-child(1) {
+                width: 40px;
+                height: 40px;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .bubble:nth-child(2) {
+                width: 60px;
+                height: 60px;
+                left: 25%;
+                animation-delay: 1s;
+            }
+
+            .bubble:nth-child(3) {
+                width: 30px;
+                height: 30px;
+                left: 45%;
+                animation-delay: 2s;
+            }
+
+            .bubble:nth-child(4) {
+                width: 70px;
+                height: 70px;
+                left: 65%;
+                animation-delay: 0.5s;
+            }
+
+            .bubble:nth-child(5) {
+                width: 50px;
+                height: 50px;
+                left: 80%;
+                animation-delay: 1.5s;
+            }
+
+            @keyframes float {
+                0% {
+                    transform: translateY(0);
+                    opacity: 0;
+                }
+                25% {
+                    opacity: 1;
+                }
+                75% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(-120vh);
+                    opacity: 0;
+                }
+            }
+
+            footer {
+                background-color: var(--foreground);
+                color: var(--muted);
+                padding: 25px 0;
+            }
+
+            footer h5 {
+                color: var(--primary);
+                font-weight: bold;
+                margin-bottom: 15px;
+                font-size: 1.2rem;
+            }
+
+            footer a {
+                color: var(--muted);
+                text-decoration: none;
+                transition: color 0.3s;
+                font-size: 1.1rem;
+            }
+
+            footer a:hover {
+                color: var(--primary);
+            }
+
+            /* Media Queries for Responsiveness */
+            @media (max-width: 768px) {
+                .hero {
+                    padding: 120px 0;
+                }
+
+                .hero h1 {
+                    font-size: 2.7rem;
+                }
+
+                .hero p {
+                    font-size: 1.2rem;
+                }
+
+                .navbar-brand {
+                    font-size: 2rem;
+                }
+
+                .section-title {
+                    font-size: 2.3rem;
+                }
+            }
+
+            /* Base styles */
+            :root {
+                --primary: #0070f3;
+                --primary-hover: #0051a2;
+                --background: #ffffff;
+                --foreground: #000000;
+                --muted: #f5f5f5;
+                --border: #e5e5e5;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: system-ui, -apple-system, sans-serif;
+            }
+
+            body {
+                background: var(--background);
+                color: var(--foreground);
+                line-height: 1.5;
+                padding: 0; /* Remove padding from body */
+            }
+
+            /* Container styles */
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0.8rem;
+            }
+
+            .grid {
+                display: grid;
+                gap: 1.2rem;
+            }
+
+            @media (min-width: 768px) {
+                .grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            .space-y > * + * {
+                margin-top: 0.8rem;
+            }
+
+            /* Component styles */
+            .card {
+                background: var(--background);
+                border: 1px solid var(--border);
+                border-radius: 0.5rem;
+                padding: 1.2rem;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                transition: box-shadow 0.3s ease;
+            }
+
+            .card:hover {
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+                font-weight: 600;
+                margin-bottom: 0.8rem;
+            }
+
+            .input-group {
+                display: flex;
+                flex-direction: column;
+                gap: 0.4rem;
+            }
+
+            .label {
+                font-weight: 500;
+                font-size: 0.8rem;
+            }
+
+            .input, .textarea {
+                width: 100%;
+                padding: 0.4rem;
+                border: 1px solid var(--border);
+                border-radius: 0.25rem;
+                font-size: 0.8rem;
+                transition: border-color 0.3s ease;
+            }
+
+            .input:focus, .textarea:focus {
+                border-color: var(--primary);
+                outline: none;
+            }
+
+            .textarea {
+                min-height: 80px;
+                resize: vertical;
+            }
+
+            .button {
+                background: var(--primary);
+                color: white;
+                border: none;
+                border-radius: 0.25rem;
+                padding: 0.4rem 0.8rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            .button:hover {
+                background: var(--primary-hover);
+            }
+
+            .button-outline {
+                background: transparent;
+                border: 1px solid var(--border);
+                color: var(--foreground);
+                transition: background-color 0.2s, color 0.2s;
+            }
+
+            .button-outline:hover {
+                background: var(--muted);
+                color: var(--foreground);
+            }
+
+            .flex {
+                display: flex;
+                gap: 0.4rem;
+            }
+
+            .justify-between {
+                justify-content: space-between;
+            }
+
+            .items-center {
+                align-items: center;
+            }
+
+            .process-log {
+                background: var(--muted);
+                padding: 0.8rem;
+                border-radius: 0.5rem;
+                font-family: monospace;
+                font-size: 0.7rem;
+                overflow-x: auto;
+                white-space: pre;
+                max-height: 500px;
+                overflow-y: auto;
+            }
+
+            .copy-button {
+                position: absolute;
+                top: 0.4rem;
+                right: 0.4rem;
+                padding: 0.2rem;
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                opacity: 0.5;
+                transition: opacity 0.3s ease;
+            }
+
+            .copy-button:hover {
+                opacity: 1;
+            }
+
+            .relative {
+                position: relative;
+            }
+
+            .text-center {
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">CipherCraft</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">HOME</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/DES">DES</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/AES">AES</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/RSA">RSA</a>
+
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Simulation
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/simulation/DES">DES Simulation</a></li>
+                            <li><a class="dropdown-item" href="/simulation/AES">AES Simulation</a></li>
+                            <li><a class="dropdown-item" href="/simulation/RSA">RSA Simulation</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="container text-center">
+                <h1 class="display-4 fw-bold mb-4">Advanced Encryption Standard (AES)</h1>
+                <p class="lead mb-5">Explore the AES algorithm, a modern symmetric-key block cipher.</p>
+                <a href="#overview" class="btn btn-primary btn-lg">Learn More <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </section>
+
+        <div class="container" style="margin-top: 80px;">
+          <h2 class="text-center" style="margin-bottom: 0.8rem;">How This AES Demo Works</h2>
+          <p>
+            This demo provides a <b>simplified illustration</b> of AES (Advanced Encryption Standard) encryption and decryption.
+            <b>It is important to understand that this is a simulation and does not perform real AES encryption.</b>
+            Since actual AES involves complex mathematical operations, this demo uses <b>mock transformations</b> for visualization purposes only.
+            Here's a basic overview:
+          </p>
+          <ol class="list-group list-group-numbered">
+            <li class="list-group-item"><b>Input:</b> Enter the plaintext you wish to "encrypt" and a 16-byte hexadecimal key.</li>
+            <li class="list-group-item"><b>Encryption:</b> Clicking "Encrypt" will convert the plaintext to its hexadecimal representation and simulate the encryption process.</li>
+            <li class="list-group-item"><b>Decryption:</b> Clicking "Decrypt" will take the "encrypted" hexadecimal text and convert it back to the original plaintext.</li>
+            <li class="list-group-item"><b>Process Log:</b> The "Process Log" displays a <b>mock representation</b> of the AES encryption/decryption rounds, showing how the data might be transformed in each round. <b>This is not a real AES process.</b></li>
+          </ol>
+          <p><b>This simulation is for educational purposes only and should not be used for any real encryption or security applications.</b></p>
+
+            <h1 class="text-center" style="margin-bottom: 1.5rem;">AES Encryption Demo</h1>
+
+            <div class="grid">
+                <!-- Input Card -->
+                <div class="card">
+                    <h2 class="card-title">Input</h2>
+                    <div class="space-y">
+                        <div class="input-group">
+                            <label class="label" for="plaintext">Plaintext</label>
+                            <textarea id="plaintext" class="textarea" placeholder="Enter text to encrypt"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <div class="flex justify-between items-center">
+                                <label class="label" for="key">Encryption Key (16 bytes hex)</label>
+                                <button id="generateKey" class="button button-outline">
+                                    🔄 Generate Key
+                                </button>
+                            </div>
+                            <input id="key" type="text" class="input" placeholder="Enter or generate key">
+                        </div>
+                        <div class="flex">
+                            <button id="encrypt" class="button" style="flex: 1">Encrypt</button>
+                            <button id="decrypt" class="button" style="flex: 1">Decrypt</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Card -->
+                <div class="card">
+                    <h2 class="card-title">Output</h2>
+                    <div class="space-y">
+                        <div class="input-group">
+                            <label class="label">Encrypted Text</label>
+                            <div class="relative">
+                                <textarea id="encryptedText" class="textarea" readonly></textarea>
+                                <button class="copy-button" onclick="copyToClipboard('encryptedText')">📋</button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="label">Decrypted Text</label>
+                            <div class="relative">
+                                <textarea id="decryptedText" class="textarea" readonly></textarea>
+                                <button class="copy-button" onclick="copyToClipboard('decryptedText')">📋</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Process Log Card -->
+            <div class="card" style="margin-top: 1.2rem;">
+                <h2 class="card-title">Process Log</h2>
+                <pre id="processLog" class="process-log"></pre>
+                <button id="clearLog" class="button button-outline" style="margin-top: 0.8rem;">Clear Log</button>
+            </div>
+        </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Helper function to format state matrix for display
+            function formatStateMatrix(state) {
+                return state.map(row => 
+                    row.map(byte => byte.toString(16).padStart(2, '0')).join(' ')
+                ).join('\n');
+            }
+
+            // Helper function to convert string to hex
+            function stringToHex(str) {
+                return Array.from(str)
+                    .map(char => char.charCodeAt(0).toString(16).padStart(2, '0'))
+                    .join('');
+            }
+
+            // Helper function to convert hex to string
+            function hexToString(hex) {
+                return hex.match(/.{1,2}/g)
+                    ?.map(byte => String.fromCharCode(parseInt(byte, 16)))
+                    .join('') || '';
+            }
+
+            // Mock AES state transformations for visualization
+            function mockAESTransformation(state, round, operation) {
+                return state.map(row => 
+                    row.map(byte => (byte + round * 16) % 256)
+                );
+            }
+
+            // Generate process logs
+            function generateProcessLog(isEncryption) {
+                const logs = [];
+                const mockState = [
+                    [0x32, 0x88, 0x31, 0xe0],
+                    [0x43, 0x5a, 0x31, 0x37],
+                    [0xf6, 0x30, 0x98, 0x07],
+                    [0xa8, 0x8d, 0xa2, 0x34]
+                ];
+
+                logs.push('Initial state:');
+                logs.push(formatStateMatrix(mockState));
+                logs.push('');
+
+                for (let round = 1; round <= 10; round++) {
+                    logs.push(`\nRound ${round}`);
+                    logs.push('========================================');
+
+                    if (isEncryption) {
+                        logs.push('\nAfter SubBytes:');
+                        logs.push(formatStateMatrix(mockAESTransformation(mockState, round, 'SubBytes')));
+                        
+                        logs.push('\nAfter ShiftRows:');
+                        logs.push(formatStateMatrix(mockAESTransformation(mockState, round, 'ShiftRows')));
+                        
+                        if (round < 10) {
+                            logs.push('\nAfter MixColumns:');
+                            logs.push(formatStateMatrix(mockAESTransformation(mockState, round, 'MixColumns')));
+                        }
+                    } else {
+                        logs.push('\nAfter InvShiftRows:');
+                        logs.push(formatStateMatrix(mockAESTransformation(mockState, round, 'InvShiftRows')));
+                        
+                        logs.push('\nAfter InvSubBytes:');
+                        logs.push(formatStateMatrix(mockAESTransformation(mockState, round, 'InvSubBytes')));
+                        
+                        if (round < 10) {
+                            logs.push('\nAfter InvMixColumns:');
+                            logs.push(formatStateMatrix(mockAESTransformation(mockState, round, 'InvMixColumns')));
+                        }
+                    }
+
+                    logs.push('\nAfter AddRoundKey:');
+                        logs.push(formatStateMatrix(mockAESTransformation(mockState, round, 'AddRoundKey')));
+                    }
+
+                    return logs;
+                }
+
+                // Copy to clipboard function
+                async function copyToClipboard(elementId) {
+                    const text = document.getElementById(elementId).value;
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        alert('Copied to clipboard!');
+                    } catch (err) {
+                        console.error('Failed to copy text: ', err);
+                    }
+                }
+
+                // Generate random key
+                function generateRandomKey() {
+                    const array = new Uint8Array(16);
+                    crypto.getRandomValues(array);
+                    return Array.from(array)
+                        .map(b => b.toString(16).padStart(2, '0'))
+                        .join('');
+                }
+
+                // Validate key
+                function isValidKey(key) {
+                    return /^[0-9a-fA-F]{32}$/.test(key);
+                }
+
+                // Event Listeners
+                document.getElementById('generateKey').addEventListener('click', () => {
+                    document.getElementById('key').value = generateRandomKey();
+                });
+
+                document.getElementById('encrypt').addEventListener('click', async () => {
+                    const plaintext = document.getElementById('plaintext').value;
+                    const key = document.getElementById('key').value;
+
+                    if (!isValidKey(key)) {
+                        alert("Please enter a valid 16-byte (32 character) hexadecimal key.");
+                        return;
+                    }
+
+                    const encryptedHex = stringToHex(plaintext);
+                    document.getElementById('encryptedText').value = encryptedHex;
+
+                    // Update process log for encryption
+                    const processLog = document.getElementById('processLog');
+                    processLog.textContent = "Starting AES Encryption Process\n" +
+                                              "==================================================\n" +
+                                              generateProcessLog(true).join('\n') + 
+                                              "\nEncrypted Text: " + encryptedHex + 
+                                              "\nAES Encryption Process completed\n" +
+                                              "==================================================";
+                });
+
+                document.getElementById('decrypt').addEventListener('click', async () => {
+                    const encryptedHex = document.getElementById('encryptedText').value;
+                    const key = document.getElementById('key').value;
+
+                     if (!isValidKey(key)) {
+                        alert("Please enter a valid 16-byte (32 character) hexadecimal key.");
+                        return;
+                    }
+
+                    const decryptedText = hexToString(encryptedHex);
+                    document.getElementById('decryptedText').value = decryptedText;
+
+                    // Update process log for decryption
+                    const processLog = document.getElementById('processLog');
+                    processLog.textContent = "Starting AES Decryption Process\n" +
+                                              "==================================================\n" +
+                                              generateProcessLog(false).join('\n') + 
+                                              "\nDecrypted Text: " + decryptedText + 
+                                              "\nAES Decryption Process completed\n" +
+                                              "==================================================";
+                });
+
+                document.getElementById('clearLog').addEventListener('click', () => {
+                    document.getElementById('processLog').textContent = "";
+                });
+            </script>
+    </body>
+    </html>

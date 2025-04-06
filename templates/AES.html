@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CipherCraft - Advanced Encryption Standard (AES)</title>
+    <meta name="description" content="Explore the Advanced Encryption Standard (AES) algorithm in detail, covering its history, key generation, encryption/decryption processes, and real-world applications.">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --background: #ffffff;
+            --foreground: #0f172a;
+            --muted: #f1f5f9;
+            --muted-foreground: #64748b;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            color: var(--foreground);
+            background-color: var(--background);
+            overflow-x: hidden;
+            font-size: 1rem; /* Reduced body font size */
+        }
+
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-size: 2.3rem; /* Reduced navbar brand font size */
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .hero {
+            background: linear-gradient(to bottom, #e0f7fa, #ffffff);
+            color: var(--foreground);
+            text-align: center;
+            padding: 150px 0; /* Reduced hero padding */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem; /* Reduced hero heading font size */
+            font-weight: bold;
+            margin-bottom: 15px; /* Reduced hero heading margin */
+            font-family: 'Roboto Slab', serif;
+            color: var(--foreground);
+        }
+
+        .hero p {
+            font-size: 1.3rem; /* Reduced hero paragraph font size */
+            margin-bottom: 30px; /* Reduced hero paragraph margin */
+            color: var(--foreground);
+        }
+
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            transition: background-color 0.3s, border-color 0.3s;
+            padding: 12px 28px; /* Reduced button padding */
+            font-size: 1.1rem; /* Reduced button font size */
+            border-radius: 5px;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .text-muted {
+            color: var(--muted-foreground) !important;
+        }
+
+        .bg-light {
+            background-color: var(--muted) !important;
+        }
+
+        .section-title {
+            position: relative;
+            padding-bottom: 15px; /* Reduced section title padding */
+            margin-bottom: 30px; /* Reduced section title margin */
+            font-family: 'Roboto Slab', serif;
+            font-weight: 700;
+            font-size: 2.7rem; /* Reduced section title font size */
+            color: var(--foreground);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            height: 4px;
+            width: 60px; /* Reduced section title underline width */
+            background-color: var(--primary);
+        }
+
+        h2 {
+          font-family: 'Roboto Slab', serif;
+          font-weight: 700;
+          color: var(--foreground);
+          font-size: 2rem; /* Reduced h2 font size */
+        }
+
+        h3 {
+          font-family: 'Roboto Slab', serif;
+          font-weight: 400;
+          color: var(--foreground);
+          font-size: 1.4rem; /* Reduced h3 font size */
+        }
+
+        .feature-icon {
+            width: 90px; /* Reduced feature icon width */
+            height: 90px; /* Reduced feature icon height */
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.7rem; /* Reduced feature icon font size */
+            margin-bottom: 15px; /* Reduced feature icon margin */
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .feature-icon:hover {
+            transform: rotate(360deg) scale(1.1); /* Reduced feature icon hover scale */
+        }
+
+        .list-group-numbered .list-group-item {
+            margin-bottom: 0.6rem; /* Reduced list group item margin */
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            font-size: 1.1rem; /* Reduced list group item font size */
+        }
+
+        .navbar-nav .nav-link {
+            transition: color 0.3s;
+            color: var(--foreground);
+            font-size: 1.1rem; /* Reduced navbar link font size */
+            padding: 8px 12px; /* Reduced navbar link padding */
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--primary-dark);
+        }
+
+        .navbar-nav .nav-link.active {
+            background-color: var(--primary);
+            color: white !important;
+            border-radius: 0.25rem;
+        }
+
+        /* Dropdown Styles */
+        .dropdown-menu {
+            background-color: var(--muted);
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            padding: 0.4rem 0; /* Reduced dropdown padding */
+            margin-top: 0.4rem; /* Reduced dropdown margin */
+            opacity: 0;
+            transform: translateY(-8px); /* Reduced dropdown transform */
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            display: block;
+            position: absolute;
+            z-index: 1000;
+            min-width: 9rem; /* Reduced dropdown width */
+            list-style: none;
+            text-align: left;
+        }
+
+        .dropdown-menu[data-bs-popper="static"] {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            color: var(--foreground);
+            padding: 0.5rem 1rem; /* Reduced dropdown item padding */
+            clear: both;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: inherit;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: block;
+            width: 100%;
+            font-size: 1rem; /* Reduced dropdown item font size */
+        }
+
+        .dropdown-item:hover,
+        .dropdown-item:focus {
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+        }
+
+        .dropdown-divider {
+            height: 0;
+            margin: 0.4rem 0; /* Reduced dropdown divider margin */
+            overflow: hidden;
+            border-top: 1px solid var(--muted-foreground);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(173, 216, 230, 0.3);
+            animation: float 4s infinite linear;
+            bottom: 0;
+        }
+
+        .bubble:nth-child(1) {
+            width: 30px; /* Reduced bubble width */
+            height: 30px; /* Reduced bubble height */
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bubble:nth-child(2) {
+            width: 50px; /* Reduced bubble width */
+            height: 50px; /* Reduced bubble height */
+            left: 25%;
+            animation-delay: 1s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 25px; /* Reduced bubble width */
+            height: 25px; /* Reduced bubble height */
+            left: 45%;
+            animation-delay: 2s;
+        }
+
+        .bubble:nth-child(4) {
+            width: 60px; /* Reduced bubble width */
+            height: 60px; /* Reduced bubble height */
+            left: 65%;
+            animation-delay: 0.5s;
+        }
+
+        .bubble:nth-child(5) {
+            width: 40px; /* Reduced bubble width */
+            height: 40px; /* Reduced bubble height */
+            left: 80%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            25% {
+                opacity: 1;
+            }
+            75% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120vh);
+                opacity: 0;
+            }
+        }
+
+        footer {
+            background-color: var(--foreground);
+            color: var(--muted);
+            padding: 25px 0; /* Reduced footer padding */
+        }
+
+        footer h5 {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 15px; /* Reduced footer heading margin */
+            font-size: 1.2rem; /* Reduced footer heading font size */
+            }
+
+            footer a {
+                color: var(--muted);
+                text-decoration: none;
+                transition: color 0.3s;
+                font-size: 1.1rem; /* Reduced footer link font size */
+            }
+
+            footer a:hover {
+                color: var(--primary);
+            }
+
+            /* Media Queries for Responsiveness */
+            @media (max-width: 768px) {
+                .hero {
+                    padding: 120px 0; /* Reduced hero padding */
+                }
+
+                .hero h1 {
+                    font-size: 2.8rem; /* Reduced hero heading font size */
+                }
+
+                .hero p {
+                    font-size: 1.2rem; /* Reduced hero paragraph font size */
+                }
+
+                .navbar-brand {
+                    font-size: 2rem; /* Reduced navbar brand font size */
+                }
+
+                .section-title {
+                    font-size: 2.3rem; /* Reduced section title font size */
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">CipherCraft</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">HOME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/DES">DES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/AES">AES</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/RSA">RSA</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Simulation
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="/simulation/DES">DES Simulation</a></li>
+                                <li><a class="dropdown-item" href="/simulation/AES">AES Simulation</a></li>
+                                <li><a class="dropdown-item" href="/simulation/RSA">RSA Simulation</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <section class="hero">
+            <div class="hero-content">
+                <div class="container text-center">
+                    <h1 class="display-4 fw-bold mb-4">Advanced Encryption Standard (AES)</h1>
+                <p class="lead mb-5">Delve into the intricacies of AES, the cornerstone of modern symmetric encryption.</p>
+                    <a href="#overview" class="btn btn-primary btn-lg">Explore AES <i class="fas fa-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+            <div class="bubble"></div>
+        </section>
+
+        <section id="overview" class="py-5">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">AES: An Overview</h2>
+                <div class="card">
+                    <div class="card-body">
+                    <p class="card-text">The Advanced Encryption Standard (AES), also known as Rijndael, is a symmetric-key encryption algorithm chosen by the U.S. National Institute of Standards and Technology (NIST) in 2001 to replace the Data Encryption Standard (DES). Designed by Joan Daemen and Vincent Rijmen, AES offers a robust and efficient solution for securing sensitive data.</p>
+                    <p class="card-text">AES operates on 128-bit blocks of data and supports key sizes of 128, 192, and 256 bits, providing varying levels of security to meet different requirements. Its adoption across numerous applications underscores its importance in modern cryptography.</p>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h3 class="h5">Key Characteristics</h3>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Symmetric-Key Algorithm:</b> AES uses the same key for both encryption and decryption.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Variable Key Sizes:</b> Supports 128, 192, and 256-bit key lengths.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Block Size:</b> Operates on 128-bit blocks of data.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Substitution-Permutation Network (SPN):</b> Employs a SPN architecture for enhanced security.</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="h5">Historical Context</h3>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>NIST Selection:</b> Chosen by NIST to replace DES, which was becoming vulnerable to brute-force attacks.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Rijndael Cipher:</b> Based on the Rijndael cipher, known for its efficiency and security.</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i><b>Global Adoption:</b> Widely used in government, finance, and various commercial applications.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="key-generation" class="py-5 bg-light">
+            <div class="container">
+            <h2 class="text-center section-title mb-5">AES Key Expansion</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                    <h3 class="h4 mb-4">Key Expansion Process</h3>
+                    <p>AES key expansion generates a series of round keys from the initial key. The number of round keys depends on the key size, ensuring that each round of encryption uses a unique key.</p>
+                        <ol class="list-group list-group-numbered">
+                        <li class="list-group-item"><b>Initial Key:</b> The process begins with the original encryption key.</li>
+                        <li class="list-group-item"><b>Round Key Generation:</b> Round keys are derived iteratively using a combination of substitution, permutation, and XOR operations.</li>
+                        <li class="list-group-item"><b>Rcon (Round Constant):</b> Round constants introduce asymmetry, preventing certain types of attacks.</li>
+                        <li class="list-group-item"><b>SubWord Transformation:</b> Applies an S-box substitution to the words of the key.</li>
+                        <li class="list-group-item"><b>RotWord Transformation:</b> Performs a cyclic permutation on the words of the key.</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="/static/images/AES_key.png" alt="AES Key Generation Process" class="img-fluid rounded">
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="encryption" class="py-5">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">AES Encryption Process</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="h4 mb-4">Encryption Steps</h3>
+                    <p>AES encryption involves several rounds of transformations, including SubBytes, ShiftRows, MixColumns, and AddRoundKey. The number of rounds depends on the key size.</p>
+                        <ol class="list-group list-group-numbered">
+                        <li class="list-group-item"><b>Initial Round Key Addition:</b> The initial round key is XORed with the plaintext.</li>
+                        <li class="list-group-item"><b>SubBytes:</b> A non-linear byte substitution using an S-box.</li>
+                        <li class="list-group-item"><b>ShiftRows:</b> Cyclically shifts the bytes in each row of the state array.</li>
+                        <li class="list-group-item"><b>MixColumns:</b> A mixing operation that operates on the columns of the state array.</li>
+                        <li class="list-group-item"><b>AddRoundKey:</b> XORs the state with the round key.</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="/static/images/AES_Encrypt.jpg" alt="AES Encryption Process" class="img-fluid rounded">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="decryption" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">AES Decryption Process</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="h4 mb-4">Decryption Steps</h3>
+                        <p>AES decryption is the reverse of encryption, applying the same steps in reverse order with the round keys used in reverse order.</p>
+                        <ol class="list-group list-group-numbered">
+                        <li class="list-group-item"><b>Initial Round Key Addition:</b> The final round key is XORed with the ciphertext.</li>
+                        <li class="list-group-item"><b>InvShiftRows:</b> Inverse of ShiftRows, cyclically shifts the bytes in each row in the opposite direction.</li>
+                        <li class="list-group-item"><b>InvSubBytes:</b> Inverse of SubBytes, applies the inverse S-box substitution.</li>
+                        <li class="list-group-item"><b>AddRoundKey:</b> XORs the state with the round key.</li>
+                        <li class="list-group-item"><b>InvMixColumns:</b> Inverse of MixColumns, performs the inverse mixing operation.</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="/static/images/AES_decrypt.png" alt="AES Decryption Process" class="img-fluid rounded">
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <section id="sub-bytes" class="py-5">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">SubBytes Transformation</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="h4 mb-4">Detailed Explanation</h3>
+                    <p class="card-text">The SubBytes transformation is a non-linear byte substitution step where each byte in the state array is replaced with a corresponding value from the AES S-box. This S-box is a 16x16 matrix derived from the multiplicative inverse over GF(2^8), providing non-linearity crucial for security against linear cryptanalysis.</p>
+                    <p class="card-text">Each byte in the state array is divided into two parts: the left nibble (4 bits) represents the row index, and the right nibble represents the column index in the S-box. The value at the intersection of this row and column replaces the original byte.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="shift-rows" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">ShiftRows Transformation</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="h4 mb-4">Detailed Explanation</h3>
+                    <p class="card-text">The ShiftRows transformation cyclically shifts the bytes in each row of the state array. The first row is not shifted, the second row is shifted one byte to the left, the third row is shifted two bytes to the left, and the fourth row is shifted three bytes to the left. This provides diffusion, ensuring bits of the plaintext are spread throughout the state.</p>
+                    <p class="card-text">This shifting ensures that after this transformation, bytes in the same column are from different columns in the previous state, enhancing the algorithm's resistance to cryptanalytic attacks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="mix-columns" class="py-5">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">MixColumns Transformation</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="h4 mb-4">Detailed Explanation</h3>
+                    <p class="card-text">The MixColumns transformation operates on each column of the state array, treating each column as a polynomial over GF(2^8). Each column is multiplied modulo x^4 + 1 with a fixed polynomial a(x) = {03}x^3 + {01}x^2 + {01}x + {02}. This provides diffusion across the columns, ensuring bits of each byte are spread throughout the column.</p>
+                    <p class="card-text">This step is a matrix multiplication that combines the bytes in each column, providing a high degree of diffusion. The specific polynomial used is chosen to ensure that MixColumns is invertible.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="add-round-key" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">AddRoundKey Transformation</h2>
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="h4 mb-4">Detailed Explanation</h3>
+                    <p class="card-text">In the AddRoundKey transformation, each byte of the state is XORed with a byte of the round key. The round key is derived from the main key using the key expansion algorithm. This transformation adds confusion to the algorithm, making the relationship between the key and the ciphertext more complex.</p>
+                    <p class="card-text">The round key is the same size as the state (128 bits), and the XOR operation is performed bitwise. This step ensures that the key is thoroughly mixed into the state, enhancing security.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <section id="applications" class="py-5">
+            <div class="container">
+                <h2 class="text-center section-title mb-5">Real-World Applications of AES</h2>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="feature-icon">
+                        <i class="fas fa-wifi"></i>
+                        </div>
+                    <h3>Wi-Fi Security (WPA3)</h3>
+                    <p>AES is used in the latest Wi-Fi security protocol, WPA3, to encrypt wireless communications, protecting data transmitted over Wi-Fi networks from eavesdropping.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    <h3>Secure Web Browsing (HTTPS)</h3>
+                    <p>AES is used in the Transport Layer Security (TLS) protocol, the foundation of HTTPS, ensuring data transmitted between web browsers and servers is encrypted and secure.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Data Storage Encryption</h3>
+                    <p>AES is used to encrypt data stored on hard drives, solid-state drives, and other storage devices, protecting sensitive data from unauthorized access.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center section-title mb-5">Advantages & Disadvantages</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="h4 mb-4">Advantages</h3>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success me-2"></i>Highly secure against known attacks</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Fast execution speed (in hardware and software)</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Flexible key sizes (128, 192, 256 bits)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h3 class="h4 mb-4">Disadvantages</h3>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-times text-danger me-2"></i>More complex implementation compared to DES</li>
+                                <li><i class="fas fa-times text-danger me-2"></i>Potential for side-channel attacks if not implemented carefully</li>
+                            </ul>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-dark text-light py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>CipherCraft</h5>
+                        <p class="small">Exploring the world of cryptography through interactive learning.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#" class="text-light">About Us</a></li>
+                            <li><a href="#" class="text-light">Contact</a></li>
+                            <li><a href="#" class="text-light">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Follow Us</h5>
+                        <div class="d-flex">
+                            <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-light me-3"><i class="fab fa-github"></i></a>
+                            <a href="#" class="text-light"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+                    if (href !== '#') {
+                        const targetElement = document.querySelector(href);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                            });
+            });
+
+            // Add active class to nav items when scrolling
+            window.addEventListener('scroll', () => {
+                let current = '';
+                document.querySelectorAll('section').forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 60) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                document.querySelectorAll('.navbar-nav .nav-link').forEach(li => {
+                    li.classList.remove('active');
+                    if (li.getAttribute('href').substring(1) === current) {
+                        li.classList.add('active');
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
